@@ -1,18 +1,28 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import parseGitTag, {
+  EmptyInputRefError,
+  InvalidInputRefError
+} from './parse-git-tag'
 
 async function run(): Promise<void> {
+  const ref = process.env['GITHUB_REF']
+
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const tag = parseGitTag(ref)
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    core.info(`Ref: ${ref}`)
+    core.info(`Tag: ${tag}`)
 
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    core.setOutput('tag', tag)
+  } catch (e) {
+    if (e instanceof EmptyInputRefError) {
+      core.setFailed('GITHUB_REF not defined')
+      return
+    }
+    if (e instanceof InvalidInputRefError) {
+      core.setFailed('GITHUB_REF must start with refs/tags/')
+      return
+    }
   }
 }
 
