@@ -1,6 +1,44 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 985:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getGitTags = void 0;
+const child_process_1 = __nccwpck_require__(81);
+const getGitTags = () => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => {
+        (0, child_process_1.exec)('git tag --list', (err, data) => {
+            if (err) {
+                reject(err);
+            }
+            const tags = data.split('\n').filter(tag => tag !== '');
+            resolve(tags);
+        });
+    });
+});
+exports.getGitTags = getGitTags;
+const getLatestGitTag = () => __awaiter(void 0, void 0, void 0, function* () {
+    const tags = yield getGitTags();
+    return tags[tags.length - 1];
+});
+exports["default"] = getLatestGitTag;
+
+
+/***/ }),
+
 /***/ 109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -41,23 +79,41 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const parse_git_tag_1 = __importStar(__nccwpck_require__(806));
+const get_git_tags_1 = __importStar(__nccwpck_require__(985));
+function parseFromCurrentCommit() {
+    const ref = process.env['GITHUB_REF'];
+    try {
+        const tag = (0, parse_git_tag_1.default)(ref);
+        core.info(`Ref: ${ref}`);
+        core.info(`Tag: ${tag}`);
+        core.setOutput('tag', tag);
+    }
+    catch (e) {
+        if (e instanceof parse_git_tag_1.EmptyInputRefError) {
+            core.setFailed('GITHUB_REF not defined');
+            return;
+        }
+        if (e instanceof parse_git_tag_1.InvalidInputRefError) {
+            core.setFailed('GITHUB_REF must start with refs/tags/');
+            return;
+        }
+    }
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const ref = process.env['GITHUB_REF'];
-        try {
-            const tag = (0, parse_git_tag_1.default)(ref);
-            core.info(`Ref: ${ref}`);
-            core.info(`Tag: ${tag}`);
-            core.setOutput('tag', tag);
+        const parseCurrentCommit = core.getInput('parse_current_commit');
+        if (parseCurrentCommit === 'true') {
+            parseFromCurrentCommit();
         }
-        catch (e) {
-            if (e instanceof parse_git_tag_1.EmptyInputRefError) {
-                core.setFailed('GITHUB_REF not defined');
-                return;
+        else {
+            const latestTagOnly = core.getInput('latest_tag_only');
+            if (latestTagOnly === 'true') {
+                const tag = yield (0, get_git_tags_1.default)();
+                core.setOutput('tag', tag);
             }
-            if (e instanceof parse_git_tag_1.InvalidInputRefError) {
-                core.setFailed('GITHUB_REF must start with refs/tags/');
-                return;
+            else {
+                const tags = yield (0, get_git_tags_1.getGitTags)();
+                core.setOutput('tags', tags);
             }
         }
     });
@@ -2792,6 +2848,14 @@ exports["default"] = _default;
 
 "use strict";
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 81:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 

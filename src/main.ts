@@ -3,8 +3,9 @@ import parseGitTag, {
   EmptyInputRefError,
   InvalidInputRefError
 } from './parse-git-tag'
+import getLatestGitTag, {getGitTags} from './get-git-tags'
 
-async function run(): Promise<void> {
+function parseFromCurrentCommit(): void {
   const ref = process.env['GITHUB_REF']
 
   try {
@@ -22,6 +23,22 @@ async function run(): Promise<void> {
     if (e instanceof InvalidInputRefError) {
       core.setFailed('GITHUB_REF must start with refs/tags/')
       return
+    }
+  }
+}
+
+async function run(): Promise<void> {
+  const parseCurrentCommit = core.getInput('parse_current_commit')
+  if (parseCurrentCommit === 'true') {
+    parseFromCurrentCommit()
+  } else {
+    const latestTagOnly = core.getInput('latest_tag_only')
+    if (latestTagOnly === 'true') {
+      const tag = await getLatestGitTag()
+      core.setOutput('tag', tag)
+    } else {
+      const tags = await getGitTags()
+      core.setOutput('tags', tags)
     }
   }
 }

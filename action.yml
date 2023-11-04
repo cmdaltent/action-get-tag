@@ -1,9 +1,35 @@
 name: Get Tag
-description: Get the git tag from the GITHUB_REF environment variable.
+description: |
+  This action can be used to fetch the git tag of the current commit as well as all tags in the git tree.
+  In the latter case, it is also possible to retrieve the latest git tag only.
 author: Martin Weissbach
 outputs:
   tag:
-    description: the git tag name
+    description: |
+      The parsed git tag is returned.
+      If no tag is found, the output will be empty.
+      If `parse_current_commit` is set to `true` or `latest_tag_only` is set to `true` the output will be the tag of the
+      current commit.
+  tags:
+    description: |
+      An array of all found git tags in the git tree are returned.
+      This output will only contain values if `parse_current_commit` is set to `false` and `latest_tag_only` is set to
+      `false`.
+inputs:
+  parse_current_commit:
+    description: |
+      The git tag is extracted from the GITHUB_REF environment variable.
+      This means that the current commit must be tagged.
+    required: false
+    default: 'true'
+  latest_tag_only:
+    description: |
+      This flag only applies if `parse_current_commit` is set to `false` in which case all tags in the git tree are
+      parsed.
+      If this flag is set to `true` only the latest tag is returned.
+      Otherwise all tags are returned.
+    required: false
+    default: 'true'
 runs:
   using: 'node16'
   main: 'dist/index.js'
