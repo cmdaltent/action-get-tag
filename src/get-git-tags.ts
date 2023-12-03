@@ -18,6 +18,7 @@ const getGitTags = async (): Promise<string[]> => {
           return tag ? tag[1] : ''
         })
         .filter(tag => tag.match(semanticTagRegExp))
+        .reverse()
       resolve(tags)
     })
   })
@@ -25,7 +26,10 @@ const getGitTags = async (): Promise<string[]> => {
 
 const getLatestGitTag = async (): Promise<string> => {
   const tags = await getGitTags()
-  return tags[tags.length - 1]
+  if (tags.length === 0) {
+    throw new Error('No tags found')
+  }
+  return tags[0]
 }
 
 export default getLatestGitTag

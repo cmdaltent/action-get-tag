@@ -18,13 +18,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getGitTags = void 0;
 const child_process_1 = __nccwpck_require__(81);
+const command = "git for-each-ref --sort=creatordate --format '%(refname) %(creatordate)' refs/tags";
+const reqExp = /refs\/tags\/(.*?)\s/;
+const semanticTagRegExp = /v\d*\.\d*\.\d*/;
 const getGitTags = () => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
-        (0, child_process_1.exec)('git tag --list', (err, data) => {
+        (0, child_process_1.exec)(command, (err, data) => {
             if (err) {
                 reject(err);
             }
-            const tags = data.split('\n').filter(tag => tag !== '');
+            const tags = data
+                .split('\n')
+                .map(tag => tag.match(reqExp))
+                .filter(tag => tag)
+                .map(tag => {
+                return tag ? tag[1] : '';
+            })
+                .filter(tag => tag.match(semanticTagRegExp))
+                .reverse();
             resolve(tags);
         });
     });
@@ -32,7 +43,10 @@ const getGitTags = () => __awaiter(void 0, void 0, void 0, function* () {
 exports.getGitTags = getGitTags;
 const getLatestGitTag = () => __awaiter(void 0, void 0, void 0, function* () {
     const tags = yield getGitTags();
-    return tags[tags.length - 1];
+    if (tags.length === 0) {
+        throw new Error('No tags found');
+    }
+    return tags[0];
 });
 exports["default"] = getLatestGitTag;
 
