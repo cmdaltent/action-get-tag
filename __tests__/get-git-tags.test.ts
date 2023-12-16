@@ -12,4 +12,14 @@ describe('get-git-tags', () => {
     const actual = await getLatestGitTag()
     expect(actual).toBe(expected)
   })
+  it('should return only tags that match the given expression', async () => {
+    const expected = ['v1']
+    const actual = await getGitTags(/v\d*$/)
+    expect(actual).toStrictEqual(expected)
+  })
+  it('should return only the latest tag that matches the given expression', async () => {
+    const expected = 'v1'
+    const actual = await getLatestGitTag(/v\d*$/)
+    expect(actual).toBe(expected)
+  })
 })
