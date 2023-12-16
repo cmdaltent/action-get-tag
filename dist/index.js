@@ -21,7 +21,7 @@ const child_process_1 = __nccwpck_require__(81);
 const command = "git for-each-ref --sort=creatordate --format '%(refname) %(creatordate)' refs/tags";
 const reqExp = /refs\/tags\/(.*?)\s/;
 const semanticTagRegExp = /v\d*\.\d*\.\d*/;
-const getGitTags = () => __awaiter(void 0, void 0, void 0, function* () {
+const getGitTags = (filter = semanticTagRegExp) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         (0, child_process_1.exec)(command, (err, data) => {
             if (err) {
@@ -34,15 +34,15 @@ const getGitTags = () => __awaiter(void 0, void 0, void 0, function* () {
                 .map(tag => {
                 return tag ? tag[1] : '';
             })
-                .filter(tag => tag.match(semanticTagRegExp))
+                .filter(tag => tag.match(filter))
                 .reverse();
             resolve(tags);
         });
     });
 });
 exports.getGitTags = getGitTags;
-const getLatestGitTag = () => __awaiter(void 0, void 0, void 0, function* () {
-    const tags = yield getGitTags();
+const getLatestGitTag = (filter = semanticTagRegExp) => __awaiter(void 0, void 0, void 0, function* () {
+    const tags = yield getGitTags(filter);
     if (tags.length === 0) {
         throw new Error('No tags found');
     }
