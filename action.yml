@@ -1,26 +1,22 @@
 name: Get Tag
 description: |
-  This action can be used to fetch the git tag of the current commit as well as all tags in the git tree.
-  In the latter case, it is also possible to retrieve the latest git tag only.
+  This action parses the git-tree and returns the all git-tags in the tree.
+  As it is more likely that only the newest tag is needed, this action can be configured to only return the newest tag.
 author: Martin Weissbach
 outputs:
   tag:
     description: |
-      The parsed git tag is returned.
+      The parsed git-tag is returned.
       If no tag is found, the output will be empty.
-      If `parse_current_commit` is set to `true` or `latest_tag_only` is set to `true` the output will be the tag of the
-      current commit.
   tags:
     description: |
-      An array of all found git tags in the git tree are returned.
-      This output will only contain values if `parse_current_commit` is set to `false` and `latest_tag_only` is set to
-      `false`.
+      An array of all found git-tags in the git-tree are returned.
+      This output will only contain values if `newest_tag_only` is set to
+      `false` and will be empty otherwise.
 inputs:
-  latest_tag_only:
+  newest_tag_only:
     description: |
-      This flag only applies if `parse_current_commit` is set to `false` in which case all tags in the git tree are
-      parsed.
-      If this flag is set to `true` only the latest tag is returned.
+      If this flag is set to `true` only the newest git-tag is returned.
       Otherwise all tags are returned.
     required: false
     default: 'true'

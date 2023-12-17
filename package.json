@@ -2,7 +2,7 @@
   "name": "typescript-action",
   "version": "0.0.0",
   "private": true,
-  "description": "Get the git tag from the GITHUB_REF environment variable.",
+  "description": "Parse git-tags from the current repository and return either all git-tags or only the newest one.",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
