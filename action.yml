@@ -16,12 +16,6 @@ outputs:
       This output will only contain values if `parse_current_commit` is set to `false` and `latest_tag_only` is set to
       `false`.
 inputs:
-  parse_current_commit:
-    description: |
-      The git tag is extracted from the GITHUB_REF environment variable.
-      This means that the current commit must be tagged.
-    required: false
-    default: 'true'
   latest_tag_only:
     description: |
       This flag only applies if `parse_current_commit` is set to `false` in which case all tags in the git tree are

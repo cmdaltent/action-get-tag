@@ -92,80 +92,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
-const parse_git_tag_1 = __importStar(__nccwpck_require__(806));
 const get_git_tags_1 = __importStar(__nccwpck_require__(985));
-function parseFromCurrentCommit() {
-    const ref = process.env['GITHUB_REF'];
-    try {
-        const tag = (0, parse_git_tag_1.default)(ref);
-        core.info(`Ref: ${ref}`);
-        core.info(`Tag: ${tag}`);
-        core.setOutput('tag', tag);
-    }
-    catch (e) {
-        if (e instanceof parse_git_tag_1.EmptyInputRefError) {
-            core.setFailed('GITHUB_REF not defined');
-            return;
-        }
-        if (e instanceof parse_git_tag_1.InvalidInputRefError) {
-            core.setFailed('GITHUB_REF must start with refs/tags/');
-            return;
-        }
-    }
-}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const parseCurrentCommit = core.getInput('parse_current_commit');
-        if (parseCurrentCommit === 'true') {
-            parseFromCurrentCommit();
+        const latestTagOnly = core.getInput('latest_tag_only');
+        if (latestTagOnly === 'true') {
+            const tag = yield (0, get_git_tags_1.default)();
+            core.setOutput('tag', tag);
         }
         else {
-            const latestTagOnly = core.getInput('latest_tag_only');
-            if (latestTagOnly === 'true') {
-                const tag = yield (0, get_git_tags_1.default)();
-                core.setOutput('tag', tag);
-            }
-            else {
-                const tags = yield (0, get_git_tags_1.getGitTags)();
-                core.setOutput('tags', tags);
-            }
+            const tags = yield (0, get_git_tags_1.getGitTags)();
+            core.setOutput('tags', tags);
         }
     });
 }
 run();
-
-
-/***/ }),
-
-/***/ 806:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.InvalidInputRefError = exports.EmptyInputRefError = void 0;
-class EmptyInputRefError extends Error {
-    constructor() {
-        super('No inputRef provided');
-    }
-}
-exports.EmptyInputRefError = EmptyInputRefError;
-class InvalidInputRefError extends Error {
-    constructor() {
-        super('inputRef must start with refs/tags/');
-    }
-}
-exports.InvalidInputRefError = InvalidInputRefError;
-const parseGitTag = (inputRef) => {
-    if (!inputRef) {
-        throw new EmptyInputRefError();
-    }
-    if (!inputRef.startsWith('refs/tags/')) {
-        throw new InvalidInputRefError();
-    }
-    return inputRef.replace(/^refs\/tags\//, '');
-};
-exports["default"] = parseGitTag;
 
 
 /***/ }),
