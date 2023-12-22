@@ -94,9 +94,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const get_git_tags_1 = __importStar(__nccwpck_require__(985));
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const latestTagOnly = core.getInput('latest_tag_only');
-        if (latestTagOnly === 'true') {
+        const newestTagOnly = (_a = core.getInput('newest_tag_only')) !== null && _a !== void 0 ? _a : 'true';
+        if (newestTagOnly === 'true') {
             const tag = yield (0, get_git_tags_1.default)();
             core.setOutput('tag', tag);
         }
