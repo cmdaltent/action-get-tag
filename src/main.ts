@@ -2,8 +2,8 @@ import * as core from '@actions/core'
 import getLatestGitTag, {getGitTags} from './get-git-tags'
 
 async function run(): Promise<void> {
-  const latestTagOnly = core.getInput('latest_tag_only')
-  if (latestTagOnly === 'true') {
+  const newestTagOnly = core.getInput('newest_tag_only')
+  if (newestTagOnly === 'true') {
     const tag = await getLatestGitTag()
     core.setOutput('tag', tag)
   } else {
