@@ -1,0 +1,27 @@
+name: 'verify main branch'
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: verify get-all-tags works
+        id: gta_all
+        uses: cmdaltent/action-get-tag@main
+        with:
+          newest_tag_only: 'false'
+
+      - name: verify get-newest-tag works
+        id: gta_newest
+        uses: cmdaltent/action-get-tag@main
+
+      - name: verify outputs
+        run: |
+          echo "gta_all: ${{ steps.gta_all.outputs.tags }}"
+          echo "gta_newest: ${{ steps.gta_newest.outputs.tag }}"
