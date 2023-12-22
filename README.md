@@ -26,3 +26,16 @@ In order to return all git-tags, the action can be used as follows:
 - name: Print Tags
   §run: echo ${{ steps.get-tags.outputs.tags }}
 ```
+
+Both actions need the full history of the repository to be checked out.
+This can be achieved as follows:
+
+```yaml
+- name: Checkout repository with full history
+  uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+```
+
+If only the latest commit is being checked out, the action will return an empty list `[]` if all tags are being fetched
+or an empty string `''` if only the latest commit is being fetched unless the latest commit contains a valid git-tag.
