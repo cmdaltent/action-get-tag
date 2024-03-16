@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "description": "Parse git-tags from the current repository and return either all git-tags or only the newest one.",
+  "engines": {
+    "node": ">=20"
+  },
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
