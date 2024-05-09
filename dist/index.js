@@ -21,7 +21,7 @@ const child_process_1 = __nccwpck_require__(81);
 const command = "git for-each-ref --sort=creatordate --format '%(refname) %(creatordate)' refs/tags";
 const reqExp = /refs\/tags\/(.*?)\s/;
 const semanticTagRegExp = /v\d*\.\d*\.\d*/;
-const getGitTags = (filter = semanticTagRegExp) => __awaiter(void 0, void 0, void 0, function* () {
+const getGitTags = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (filter = semanticTagRegExp) {
     return new Promise((resolve, reject) => {
         (0, child_process_1.exec)(command, (err, data) => {
             if (err) {
@@ -41,7 +41,7 @@ const getGitTags = (filter = semanticTagRegExp) => __awaiter(void 0, void 0, voi
     });
 });
 exports.getGitTags = getGitTags;
-const getLatestGitTag = (filter = semanticTagRegExp) => __awaiter(void 0, void 0, void 0, function* () {
+const getLatestGitTag = (...args_2) => __awaiter(void 0, [...args_2], void 0, function* (filter = semanticTagRegExp) {
     const tags = yield getGitTags(filter);
     if (tags.length === 0) {
         throw new Error('No tags found');
@@ -94,8 +94,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const get_git_tags_1 = __importStar(__nccwpck_require__(985));
 function run() {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         const newestTagOnly = (_a = core.getInput('newest_tag_only')) !== null && _a !== void 0 ? _a : 'true';
         if (newestTagOnly === 'true') {
             const tag = yield (0, get_git_tags_1.default)();
